@@ -1,0 +1,19 @@
+[package]
+name = "adventofcode-2022"
+version = "0.1.12"
+edition = "2021"
+default-run = "adventofcode-2022"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+scan_fmt = "0.2.6"
+itertools = "0.12.0"
+hashbrown = "0.14.3"
+nalgebra = "0.32.3"
+priority-queue = "1.3.2"
+serde_json = "1.0.108"
+indicatif = "0.17.2"
+anyhow = "1.0.75"
+reqwest = { version = "0.11.13", features = ["blocking"]  }
+clap = { version = "4.4.10", features = ["derive"] }
