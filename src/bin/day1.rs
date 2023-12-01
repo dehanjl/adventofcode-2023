@@ -1,5 +1,4 @@
 use adventofcode_2022::runner;
-use itertools::Itertools;
 
 fn parse_input(input: &str, replace: bool) -> u32 {
     input
