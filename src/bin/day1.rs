@@ -1,31 +1,41 @@
 use adventofcode_2022::runner;
+use itertools::Itertools;
 
-fn parse_input(input: &str) -> Vec<u32> {
-    let mut cal: u32 = 0;
-    let mut cal_vec: Vec<u32> = Vec::new();
-    for line in input.lines() {
-        if !line.is_empty() {
-            cal += line.parse::<u32>().unwrap();
-        } else {
-            cal_vec.push(cal);
-            cal = 0;
-        }
-    }
-
-    cal_vec
+fn parse_input(input: &str, replace: bool) -> u32 {
+    input
+        .lines()
+        .filter(|line| !line.is_empty())
+        .map(|line| {
+            if replace {
+                line.to_string()
+                    .replace("one", "one1one")
+                    .replace("two", "two2two")
+                    .replace("three", "three3three")
+                    .replace("four", "four4four")
+                    .replace("five", "five5five")
+                    .replace("six", "six6six")
+                    .replace("seven", "seven7seven")
+                    .replace("eight", "eight8eight")
+                    .replace("nine", "nine9nine")
+            } else {
+                line.to_string()
+            }
+        })
+        .map(|line| {
+            line.chars()
+                .filter_map(|c| c.to_digit(10))
+                .collect::<Vec<u32>>()
+        })
+        .map(|vec| 10 * vec.first().unwrap() + vec.last().unwrap())
+        .sum()
 }
 
 fn part1(input: &str) {
-    println!("Day 1 Part 1: {}", parse_input(input).iter().max().unwrap());
+    println!("Day 1 Part 1: {}", parse_input(input, false));
 }
 
 fn part2(input: &str) {
-    let mut cal_vec = parse_input(input);
-    cal_vec.sort();
-    println!(
-        "Day 1 Part 2: {}",
-        cal_vec.iter().rev().take(3).sum::<u32>()
-    );
+    println!("Day 1 Part 2: {}", parse_input(input, true));
 }
 
 fn main() {

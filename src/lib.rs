@@ -72,7 +72,7 @@ fn make_path(bin_name: &str, opt: &Opt) -> PathBuf {
 /// This function may cause a path error when the "inputs/real" directory doesn't exist.
 /// The workaround is to create the directory manually.
 fn download_and_save(path: PathBuf, day: u8) -> Result<String> {
-    let resp = download_input(2022, day)?;
+    let resp = download_input(2023, day)?;
     fs::write(path, resp.as_bytes())?;
     Ok(resp)
 }
