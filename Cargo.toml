@@ -7,7 +7,7 @@ default-run = "adventofcode-2022"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-scan_fmt = "0.2.6"
+sscanf = "0.4.1"
 itertools = "0.12.0"
 hashbrown = "0.14.3"
 nalgebra = "0.32.3"
