@@ -1,4 +1,4 @@
-use adventofcode_2022::runner;
+use adventofcode_2023::runner;
 use indicatif::{ParallelProgressIterator, ProgressStyle};
 use itertools::Itertools;
 use rayon::iter::{IntoParallelRefIterator, ParallelIterator};

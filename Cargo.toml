@@ -1,8 +1,8 @@
 [package]
-name = "adventofcode-2022"
+name = "adventofcode-2023"
 version = "0.1.12"
 edition = "2021"
-default-run = "adventofcode-2022"
+default-run = "adventofcode-2023"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 

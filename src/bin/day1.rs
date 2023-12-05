@@ -1,4 +1,4 @@
-use adventofcode_2022::runner;
+use adventofcode_2023::runner;
 
 fn parse_input(input: &str, replace: bool) -> u32 {
     input

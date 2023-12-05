@@ -1,7 +1,7 @@
 Each `dayX.rs` file in this directory should use the following template.
 
 ```rust
-use adventofcode_2022::runner;
+use adventofcode_2023::runner;
 
 fn parse_input(input: &str) -> T {}
 

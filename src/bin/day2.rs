@@ -1,4 +1,4 @@
-use adventofcode_2022::runner;
+use adventofcode_2023::runner;
 use hashbrown::HashMap;
 use itertools::Itertools;
 

@@ -1,4 +1,4 @@
-# Advent of Code 2022
+# Advent of Code 2023
 A (mostly) Rust 🦀 set of solutions to the [Advent of Code](https://adventofcode.com/) puzzles for 2023.
 
 ## Instructions
