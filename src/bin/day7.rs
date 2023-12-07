@@ -13,6 +13,16 @@ const CARD_ORDER_JOKE: [Card; 13] = [
     'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A',
 ];
 
+fn replace_and_parse(s: &str) -> i64 {
+    let replaced = s
+        .replace('T', "A")
+        .replace('J', "B")
+        .replace('Q', "C")
+        .replace('K', "D")
+        .replace('A', "E");
+    i64::from_str_radix(&replaced, 16).unwrap()
+}
+
 trait Rank {
     fn rank(&self, order: &[Card]) -> usize;
 }
