@@ -9,13 +9,17 @@ const CARD_ORDER: [Card; 13] = [
     '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A',
 ];
 
+const CARD_ORDER_JOKE: [Card; 13] = [
+    'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A',
+];
+
 trait Rank {
-    fn rank(&self) -> usize;
+    fn rank(&self, order: &[Card]) -> usize;
 }
 
 impl Rank for Card {
-    fn rank(&self) -> usize {
-        CARD_ORDER
+    fn rank(&self, order: &[Card]) -> usize {
+        order
             .iter()
             .position(|&x| x == *self)
             .expect("Card not found")
@@ -25,7 +29,7 @@ impl Rank for Card {
 #[derive(Debug, PartialEq, Eq)]
 struct Hand(String);
 
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum HandType {
     FiveKind,
     FourKind,
@@ -63,26 +67,31 @@ impl Hand {
             HandType::HighCard
         }
     }
-}
 
-impl From<&str> for Hand {
-    fn from(value: &str) -> Self {
-        Hand(String::from(value))
+    fn get_type_joker(&self) -> HandType {
+        CARD_ORDER_JOKE[1..]
+            .iter()
+            .map(|c| self.0.clone().replace('J', &c.to_string()))
+            .map(|s| Hand(s).get_type())
+            .min()
+            .unwrap()
     }
-}
 
-impl Ord for Hand {
-    fn cmp(&self, other: &Self) -> Ordering {
-        if self.get_type() != other.get_type() {
-            return (self.get_type() as usize)
-                .cmp(&(other.get_type() as usize))
-                .reverse();
+    fn compare(&self, other: &Self, order: &[Card], joker: bool) -> Ordering {
+        let (self_type, other_type) = if joker {
+            (self.get_type_joker(), other.get_type_joker())
+        } else {
+            (self.get_type(), other.get_type())
+        };
+
+        if self_type != other_type {
+            return (self_type as usize).cmp(&(other_type as usize)).reverse();
         } else {
             for i in 0..5 {
                 let self_card = self.0.chars().nth(i).unwrap();
                 let other_card = other.0.chars().nth(i).unwrap();
                 if self_card != other_card {
-                    return self_card.rank().cmp(&other_card.rank());
+                    return self_card.rank(order).cmp(&other_card.rank(order));
                 }
             }
         }
@@ -90,9 +99,9 @@ impl Ord for Hand {
     }
 }
 
-impl PartialOrd for Hand {
-    fn partial_cmp(&self, other: &Self) -> Option<Ordering> {
-        Some(self.cmp(other))
+impl From<&str> for Hand {
+    fn from(value: &str) -> Self {
+        Hand(String::from(value))
     }
 }
 
@@ -108,9 +117,7 @@ fn parse_input(input: &str) -> Vec<(Hand, i64)> {
 
 fn part1(input: &str) {
     let mut hands = parse_input(input);
-    hands.sort_by(|(hand_a, _), (hand_b, _)| hand_a.cmp(hand_b));
-
-    println!("{:?}", hands);
+    hands.sort_by(|(hand_a, _), (hand_b, _)| hand_a.compare(hand_b, &CARD_ORDER, false));
 
     let winnings = hands
         .iter()
@@ -121,9 +128,20 @@ fn part1(input: &str) {
     println!("Day 7 Part 1: {}", winnings);
 }
 
-fn part2(input: &str) {}
+fn part2(input: &str) {
+    let mut hands = parse_input(input);
+    hands.sort_by(|(hand_a, _), (hand_b, _)| hand_a.compare(hand_b, &CARD_ORDER_JOKE, true));
+
+    let winnings = hands
+        .iter()
+        .enumerate()
+        .map(|(i, (_, bid))| bid * (i as i64 + 1))
+        .sum::<i64>();
+
+    println!("Day 7 Part 2: {}", winnings);
+}
 
 fn main() {
     runner(part1);
-    // runner(part2);
+    runner(part2);
 }
