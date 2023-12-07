@@ -1,6 +1,6 @@
 use adventofcode_2023::runner;
-use hashbrown::HashMap;
-use itertools::{sorted, Itertools};
+use fnv::FnvHashMap;
+use itertools::Itertools;
 use std::cmp::Ordering;
 
 type Card = char;
@@ -41,26 +41,30 @@ struct Hand(String);
 
 #[derive(Debug, PartialEq, Eq, PartialOrd, Ord)]
 enum HandType {
-    FiveKind,
-    FourKind,
-    FullHouse,
-    ThreeKind,
-    TwoPair,
-    OnePair,
-    HighCard,
+    FiveKind = 7_000_000,
+    FourKind = 6_000_000,
+    FullHouse = 5_000_000,
+    ThreeKind = 4_000_000,
+    TwoPair = 3_000_000,
+    OnePair = 2_000_000,
+    HighCard = 1_000_000,
 }
 
 impl Hand {
-    fn get_type(&self) -> HandType {
-        let mut counts: HashMap<Card, usize> = HashMap::new();
-        for card in self.0.chars() {
-            *counts.entry(card).or_insert(0) += 1;
+    fn high_pair(counts: &FnvHashMap<Card, usize>) -> (usize, usize) {
+        let (mut first, mut second) = (0, 0);
+        for &count in counts.values() {
+            if count > first {
+                second = first;
+                first = count;
+            } else if count > second {
+                second = count;
+            }
         }
+        (first, second)
+    }
 
-        let mut sorted_counts = sorted(counts.values()).rev();
-        let first = sorted_counts.next().unwrap_or(&0);
-        let second = sorted_counts.next().unwrap_or(&0);
-
+    fn match_pair(first: usize, second: usize) -> HandType {
         match (first, second) {
             (5, _) => HandType::FiveKind,
             (4, _) => HandType::FourKind,
@@ -72,13 +76,26 @@ impl Hand {
         }
     }
 
+    fn get_type(&self) -> HandType {
+        let mut counts = FnvHashMap::with_capacity_and_hasher(5, Default::default());
+        for card in self.0.chars() {
+            *counts.entry(card).or_insert(0) += 1;
+        }
+
+        let (first, second) = Hand::high_pair(&counts);
+        Hand::match_pair(first, second)
+    }
+
     fn get_type_joker(&self) -> HandType {
-        CARD_ORDER_JOKE[0..]
-            .iter()
-            .map(|c| self.0.clone().replace('J', &c.to_string()))
-            .map(|s| Hand(s).get_type())
-            .min()
-            .unwrap()
+        let mut counts = FnvHashMap::with_capacity_and_hasher(5, Default::default());
+        for card in self.0.chars() {
+            *counts.entry(card).or_insert(0) += 1;
+        }
+
+        let joker_count = counts.remove(&'J').unwrap_or(0);
+
+        let (first, second) = Hand::high_pair(&counts);
+        Hand::match_pair(first + joker_count, second)
     }
 
     fn compare(&self, other: &Self, order: &[Card], joker: bool) -> Ordering {
@@ -89,7 +106,7 @@ impl Hand {
         };
 
         if self_type != other_type {
-            return (self_type as usize).cmp(&(other_type as usize)).reverse();
+            return (self_type as usize).cmp(&(other_type as usize));
         } else {
             for i in 0..5 {
                 let self_card = self.0.chars().nth(i).unwrap();
