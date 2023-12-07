@@ -1,40 +1,8 @@
 use adventofcode_2023::runner;
 use fnv::FnvHashMap;
 use itertools::Itertools;
-use std::cmp::Ordering;
 
 type Card = char;
-
-const CARD_ORDER: [Card; 13] = [
-    '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'J', 'Q', 'K', 'A',
-];
-
-const CARD_ORDER_JOKE: [Card; 13] = [
-    'J', '2', '3', '4', '5', '6', '7', '8', '9', 'T', 'Q', 'K', 'A',
-];
-
-fn replace_and_parse(s: &str) -> i64 {
-    let replaced = s
-        .replace('T', "A")
-        .replace('J', "B")
-        .replace('Q', "C")
-        .replace('K', "D")
-        .replace('A', "E");
-    i64::from_str_radix(&replaced, 16).unwrap()
-}
-
-trait Rank {
-    fn rank(&self, order: &[Card]) -> usize;
-}
-
-impl Rank for Card {
-    fn rank(&self, order: &[Card]) -> usize {
-        order
-            .iter()
-            .position(|&x| x == *self)
-            .expect("Card not found")
-    }
-}
 
 #[derive(Debug, PartialEq, Eq)]
 struct Hand(String);
@@ -86,6 +54,17 @@ impl Hand {
         Hand::match_pair(first, second)
     }
 
+    fn score(&self) -> u32 {
+        let replaced = self
+            .0
+            .replace('A', "E")
+            .replace('K', "D")
+            .replace('Q', "C")
+            .replace('J', "B")
+            .replace('T', "A");
+        self.get_type() as u32 + u32::from_str_radix(&replaced, 16).unwrap()
+    }
+
     fn get_type_joker(&self) -> HandType {
         let mut counts = FnvHashMap::with_capacity_and_hasher(5, Default::default());
         for card in self.0.chars() {
@@ -98,66 +77,50 @@ impl Hand {
         Hand::match_pair(first + joker_count, second)
     }
 
-    fn compare(&self, other: &Self, order: &[Card], joker: bool) -> Ordering {
-        let (self_type, other_type) = if joker {
-            (self.get_type_joker(), other.get_type_joker())
-        } else {
-            (self.get_type(), other.get_type())
-        };
-
-        if self_type != other_type {
-            return (self_type as usize).cmp(&(other_type as usize));
-        } else {
-            for i in 0..5 {
-                let self_card = self.0.chars().nth(i).unwrap();
-                let other_card = other.0.chars().nth(i).unwrap();
-                if self_card != other_card {
-                    return self_card.rank(order).cmp(&other_card.rank(order));
-                }
-            }
-        }
-        Ordering::Equal
+    fn score_joker(&self) -> u32 {
+        let replaced = self
+            .0
+            .replace('A', "E")
+            .replace('K', "D")
+            .replace('Q', "C")
+            .replace('J', "1")
+            .replace('T', "A");
+        self.get_type_joker() as u32 + u32::from_str_radix(&replaced, 16).unwrap()
     }
 }
 
-impl From<&str> for Hand {
-    fn from(value: &str) -> Self {
-        Hand(String::from(value))
-    }
-}
-
-fn parse_input(input: &str) -> Vec<(Hand, i64)> {
+fn parse_input(input: &str) -> Vec<(Hand, u32)> {
     input
         .lines()
         .map(|line| {
             let (hand, bid) = line.split_once(' ').unwrap();
-            (Hand::from(hand), bid.parse::<i64>().unwrap())
+            (Hand(hand.to_string()), bid.parse::<u32>().unwrap())
         })
         .collect_vec()
 }
 
 fn part1(input: &str) {
     let mut hands = parse_input(input);
-    hands.sort_by(|(hand_a, _), (hand_b, _)| hand_a.compare(hand_b, &CARD_ORDER, false));
+    hands.sort_by_cached_key(|(hand, _)| hand.score());
 
     let winnings = hands
         .iter()
         .enumerate()
-        .map(|(i, (_, bid))| bid * (i as i64 + 1))
-        .sum::<i64>();
+        .map(|(i, (_, bid))| bid * (i as u32 + 1))
+        .sum::<u32>();
 
     println!("Day 7 Part 1: {}", winnings);
 }
 
 fn part2(input: &str) {
     let mut hands = parse_input(input);
-    hands.sort_by(|(hand_a, _), (hand_b, _)| hand_a.compare(hand_b, &CARD_ORDER_JOKE, true));
+    hands.sort_by_cached_key(|(hand, _)| hand.score_joker());
 
     let winnings = hands
         .iter()
         .enumerate()
-        .map(|(i, (_, bid))| bid * (i as i64 + 1))
-        .sum::<i64>();
+        .map(|(i, (_, bid))| bid * (i as u32 + 1))
+        .sum::<u32>();
 
     println!("Day 7 Part 2: {}", winnings);
 }

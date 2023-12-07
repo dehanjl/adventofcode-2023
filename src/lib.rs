@@ -30,6 +30,24 @@ pub fn runner(f: impl Fn(&str)) {
     println!("--- {duration:?}")
 }
 
+pub fn runner100(f: impl Fn(&str)) {
+    let opt = Opt::parse();
+
+    let input = get_input(&opt);
+
+    println!("---");
+    let min_duration = (0..100)
+        .map(|_| {
+            let start = Instant::now();
+            f(&input);
+            start.elapsed()
+        })
+        .min()
+        .unwrap();
+
+    println!("--- {min_duration:?}")
+}
+
 /// This function panics when something goes wrong. That is intended behaviour.
 fn get_input(opt: &Opt) -> String {
     let bin = binary_name();
