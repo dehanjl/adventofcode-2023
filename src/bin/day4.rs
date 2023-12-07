@@ -46,7 +46,9 @@ fn part1(input: &str) {
 
 fn part2(input: &str) {
     // id, left, right, count
-    let cards: HashMap<usize, (Vec<u32>, Vec<u32>, RefCell<usize>)> = parse_input(input)
+    type Numbers = Vec<u32>;
+    type Count = RefCell<usize>;
+    let cards: HashMap<usize, (Numbers, Numbers, Count)> = parse_input(input)
         .iter()
         .enumerate()
         .map(|(id, (l, r))| (id + 1, (l.clone(), r.clone(), RefCell::new(1))))
