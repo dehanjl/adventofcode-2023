@@ -51,25 +51,19 @@ impl Hand {
         let first = sorted_counts.next().unwrap_or(&0);
         let second = sorted_counts.next().unwrap_or(&0);
 
-        if *first == 5 {
-            HandType::FiveKind
-        } else if *first == 4 {
-            HandType::FourKind
-        } else if *first == 3 && *second == 2 {
-            HandType::FullHouse
-        } else if *first == 3 {
-            HandType::ThreeKind
-        } else if *first == 2 && *second == 2 {
-            HandType::TwoPair
-        } else if *first == 2 {
-            HandType::OnePair
-        } else {
-            HandType::HighCard
+        match (first, second) {
+            (5, _) => HandType::FiveKind,
+            (4, _) => HandType::FourKind,
+            (3, 2) => HandType::FullHouse,
+            (3, _) => HandType::ThreeKind,
+            (2, 2) => HandType::TwoPair,
+            (2, _) => HandType::OnePair,
+            _ => HandType::HighCard,
         }
     }
 
     fn get_type_joker(&self) -> HandType {
-        CARD_ORDER_JOKE[1..]
+        CARD_ORDER_JOKE[0..]
             .iter()
             .map(|c| self.0.clone().replace('J', &c.to_string()))
             .map(|s| Hand(s).get_type())
