@@ -55,14 +55,7 @@ impl Hand {
     }
 
     fn score(&self) -> u32 {
-        let replaced = self
-            .0
-            .replace('A', "E")
-            .replace('K', "D")
-            .replace('Q', "C")
-            .replace('J', "B")
-            .replace('T', "A");
-        self.get_type() as u32 + u32::from_str_radix(&replaced, 16).unwrap()
+        self.get_type() as u32 + u32::from_str_radix(&self.0, 16).unwrap()
     }
 
     fn get_type_joker(&self) -> HandType {
@@ -71,21 +64,14 @@ impl Hand {
             *counts.entry(card).or_insert(0) += 1;
         }
 
-        let joker_count = counts.remove(&'J').unwrap_or(0);
+        let joker_count = counts.remove(&'1').unwrap_or(0);
 
         let (first, second) = Hand::high_pair(&counts);
         Hand::match_pair(first + joker_count, second)
     }
 
     fn score_joker(&self) -> u32 {
-        let replaced = self
-            .0
-            .replace('A', "E")
-            .replace('K', "D")
-            .replace('Q', "C")
-            .replace('J', "1")
-            .replace('T', "A");
-        self.get_type_joker() as u32 + u32::from_str_radix(&replaced, 16).unwrap()
+        self.get_type_joker() as u32 + u32::from_str_radix(&self.0, 16).unwrap()
     }
 }
 
@@ -100,7 +86,13 @@ fn parse_input(input: &str) -> Vec<(Hand, u32)> {
 }
 
 fn part1(input: &str) {
-    let mut hands = parse_input(input);
+    let replaced = input
+        .replace('A', "E")
+        .replace('K', "D")
+        .replace('Q', "C")
+        .replace('J', "B")
+        .replace('T', "A");
+    let mut hands = parse_input(&replaced);
     hands.sort_by_cached_key(|(hand, _)| hand.score());
 
     let winnings = hands
@@ -113,7 +105,13 @@ fn part1(input: &str) {
 }
 
 fn part2(input: &str) {
-    let mut hands = parse_input(input);
+    let replaced = input
+        .replace('A', "E")
+        .replace('K', "D")
+        .replace('Q', "C")
+        .replace('J', "1")
+        .replace('T', "A");
+    let mut hands = parse_input(&replaced);
     hands.sort_by_cached_key(|(hand, _)| hand.score_joker());
 
     let winnings = hands
