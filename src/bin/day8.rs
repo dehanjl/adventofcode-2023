@@ -3,7 +3,7 @@ use hashbrown::HashMap;
 use itertools::Itertools;
 use num::integer::lcm;
 
-fn parse_input(input: &str) -> (String, HashMap<String, (String, String)>) {
+fn parse_input(input: &str) -> (Vec<char>, HashMap<String, (String, String)>) {
     let (steps, map) = input.split_once("\n\n").unwrap();
 
     let nodes = map
@@ -12,7 +12,7 @@ fn parse_input(input: &str) -> (String, HashMap<String, (String, String)>) {
         .map(|(a, b, c)| (a.to_owned(), (b.to_owned(), c.to_owned())))
         .collect::<HashMap<_, _>>();
 
-    (String::from(steps), nodes)
+    (steps.chars().collect_vec(), nodes)
 }
 
 fn part1(input: &str) {
@@ -27,7 +27,7 @@ fn part1(input: &str) {
             break;
         }
 
-        let side = steps.chars().nth(curr_steps % steps.len()).unwrap();
+        let side = steps[curr_steps % steps.len()];
         curr_node = if side == 'L' {
             nodes.get(curr_node).unwrap().0.as_str()
         } else {
@@ -54,7 +54,7 @@ fn part2(input: &str) {
                     break;
                 }
 
-                let side = steps.chars().nth(curr_steps % steps.len()).unwrap();
+                let side = steps[curr_steps % steps.len()];
                 curr_node = if side == 'L' {
                     &nodes.get(curr_node).unwrap().0
                 } else {
