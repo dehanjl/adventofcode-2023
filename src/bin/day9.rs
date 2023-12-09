@@ -66,7 +66,7 @@ fn part2(input: &str) {
         .map(|(seq, diff)| seq.first().unwrap() - diff)
         .sum::<i32>();
 
-    println!("Day 9 Part 1: {}", res);
+    println!("Day 9 Part 2: {}", res);
 }
 
 fn main() {
