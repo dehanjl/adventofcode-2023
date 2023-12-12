@@ -1,4 +1,4 @@
-use std::{collections::VecDeque, path};
+use std::collections::VecDeque;
 
 use adventofcode_2023::runner;
 use hashbrown::{HashMap, HashSet};
@@ -7,6 +7,7 @@ use itertools::Itertools;
 type Pos = (usize, usize); // (x, y)
 type Grid = Vec<Vec<Tile>>;
 
+#[allow(dead_code)]
 fn display_grid(grid: &Grid, path: &HashSet<Tile>) {
     for row in grid.iter() {
         for tile in row.iter() {
