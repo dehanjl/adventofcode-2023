@@ -11,6 +11,9 @@ use reqwest::header::COOKIE;
 struct Opt {
     #[arg(short, long)]
     real: bool,
+
+    #[arg(short, long)]
+    alt: Option<String>,
 }
 
 pub fn is_real() -> bool {
@@ -81,7 +84,11 @@ fn make_path(bin_name: &str, opt: &Opt) -> PathBuf {
 
     path.push("inputs");
     path.push(if opt.real { "real" } else { "example" });
-    path.push(bin_name);
+    path.push(if opt.real || opt.alt.is_none() {
+        bin_name
+    } else {
+        opt.alt.as_ref().unwrap()
+    });
     path.set_extension("txt");
 
     path
