@@ -3,7 +3,7 @@ Each `dayX.rs` file in this directory should use the following template.
 ```rust
 use adventofcode_2023::runner;
 
-fn parse_input(input: &str) -> T {}
+fn parse_input(input: &str) -> () {}
 
 fn part1(input: &str) {}
 
